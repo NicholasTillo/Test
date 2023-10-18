@@ -1,5 +1,8 @@
 import re 
 import random
+import tkinter as tk
+from tkinter import ttk
+from ttkthemes import ThemedTk
 
 nextID = 10
 
@@ -16,6 +19,37 @@ class cart():
 
 
 usr_cart = cart()
+root = ThemedTk(theme ="equilux")
+
+def create_GUI():
+    root.geometry("200x400")
+    tabControl = ttk.Notebook(root,name = "qoo")
+    tab1 = ttk.Frame(tabControl,name ="one")
+    tab2 = ttk.Frame(tabControl,name = "two")
+    tab3 = ttk.Frame(tabControl)
+    tabControl.add(tab1, text = "Home")
+    tabControl.add(tab2, text = "Cart")
+    tabControl.add(tab3, text = "Orders")
+    tabControl.pack(expand="1",fill="both")
+    populate_resturant()
+    root.mainloop()
+
+def populate_resturant():
+    file = open("Code/restaurants.csv", "r")
+    flag = True
+    for i in file.readlines():
+        if flag:
+            flag = False
+            continue
+        x = i.split(",")
+        print(x)
+        title_Widget = ttk.Label(root.nametowidget(".qoo.two"), text = x[0]).pack()
+        address_Widget = ttk.Label(root.nametowidget(".qoo.two"), text = x[1]).pack()
+        description_Widget = ttk.Label(root.nametowidget(".qoo.two"), text = x[2]).pack()
+
+
+
+
 
 
 def add_to_cart(item):
@@ -99,3 +133,4 @@ def check_delivery_status(order_id):
     file.close()
     pass
 
+create_GUI()
