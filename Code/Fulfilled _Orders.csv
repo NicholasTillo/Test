@@ -1,0 +1,3 @@
+OrderID,Cost,ItemList,PaymentRecived,CompletionStatus
+3031,8.32,[McDouble,Coke],Yes,No
+35126,5.32,['McDouble', 'McDouble'],No,No
