@@ -33,6 +33,7 @@ restaurants_csv_path = "Code/restaurants.csv"
 menu_csv_path = "Code/menu.csv"
 
 
+current_login = None
 
 
 #Create and Populate GUI
@@ -49,9 +50,9 @@ def create_GUI():
     tabControl.add(tab3, text = "Orders")
     tabControl.add(tab4, text = "Resturants")
     tabControl.pack(expand="1",fill="both")
-    populate_resturant()
     populate_home()
     root.mainloop()
+
 
 def register_insert():
     name=root.nametowidget(".qoo.one.i1").get()
@@ -66,10 +67,12 @@ def register_insert():
 
     print(register_user(name,password,email,location,role))
 
+
 def login_insert():
     name=root.nametowidget(".qoo.one.l1").get()
     password=root.nametowidget(".qoo.one.l2").get()
     print(login_user(name,password))
+    print(current_login)
 
 
 
@@ -102,34 +105,40 @@ def populate_home():
 
 
 
+#counter = 0
 
-def select(selected_name):
-    menu = []
-    with open(menu_csv_path, 'r') as csvfile:
+def populate_resturant():
+    counter = 0
+    global current_login
+
+    restaurants = {}
+
+    # Open restaurants.csv
+    with open(restaurants_csv_path, 'r') as csvfile:
         reader = csv.reader(csvfile)
 
         for row in reader:
-            restaurant_name, item_name, price, category, description, quantity = row
-            if restaurant_name == selected_name:
-                menu_item = f"{item_name} - Price: {price}, Category: {category}, Description: {description}"
-                menu.append(menu_item)
-        print(f"You selected: {selected_name}. Menu: {', '.join(menu)}")
-            
-            
-        
-def populate_resturant():
-    file = open("Code/restaurants.csv", "r")
-    flag = True
-    for i in file.readlines():
-        if flag:
-            flag = False
-            continue
-        x = i.split(",")
-        #print(x)
-        print(x[0])
-        ttk.Button(root.nametowidget(".qoo.four"), text = x[0],command= lambda: select()).pack()
-        ttk.Label(root.nametowidget(".qoo.four"), text = x[1]).pack()
-        ttk.Label(root.nametowidget(".qoo.four"), text = x[2]).pack()
+            if row:
+                restaurant_name = row[0] 
+                restaurant_location = row[-2]
+
+                if restaurant_location == current_login[2]:
+                    restaurants[restaurant_name] = restaurant_location
+
+    if not restaurants:
+        return f"No restaurants found in {current_login[2]}."
+
+
+    for i in restaurants.keys():
+        create_restaurant_button(restaurants,i,counter)
+        counter += 1
+
+
+def create_restaurant_button(essd,i,val):
+    ttk.Button(root.nametowidget(".qoo.four"), text = i,command = lambda: select_restaurant_and_view_menu(current_login[2],val+1)).pack()
+    ttk.Label(root.nametowidget(".qoo.four"), text = i).pack()
+    ttk.Label(root.nametowidget(".qoo.four"), text = essd[i]).pack()
+
 
 def populate_smn():
     pass
@@ -138,6 +147,7 @@ def populate_smn():
 
 
 def add_to_cart(item):
+    print(item)
     usr_cart.current_cart.append(item)
 
 
@@ -248,6 +258,8 @@ def register_user(username, password, email, location, role):
 
 # Log in a user
 def login_user(username, password):
+    
+    global current_login
     user_found = False
     # Open the users.csv file in read mode to verify the user
     with open(users_csv_path, 'r') as csvfile:
@@ -258,6 +270,8 @@ def login_user(username, password):
                 user_found = True
 
                 if row[1] == password:
+                    current_login = (username,password,row[3])
+                    populate_resturant()
                     return "Login success!"
                 else:
                     return "Password is invalid."
@@ -266,7 +280,8 @@ def login_user(username, password):
 
 
 
-def select_restaurant_and_view_menu(user_location):
+def select_restaurant_and_view_menu(user_location,selection = 0):
+    print(selection)
     restaurants = {}
 
     # Open restaurants.csv
@@ -290,8 +305,8 @@ def select_restaurant_and_view_menu(user_location):
         print(f"{index}. {name}")
 
     # Ask the user to select a restaurant
-    selection = input(
-        "Enter the number of the selected restaurant (i.e. for the first restaurant on the list type in '1'): ")
+    #selection = input(
+    #    "Enter the number of the selected restaurant (i.e. for the first restaurant on the list type in '1'): ")
 
     try:
         # Convert the selection to an integer
@@ -309,14 +324,29 @@ def select_restaurant_and_view_menu(user_location):
                     menu_item = f"{item_name} - Price: {price}, Category: {category}, Description: {description}"
                     menu.append(menu_item)
 
-        return f"You selected: {selected_name}. Menu: {', '.join(menu)}"
+        print(f"You selected: {selected_name}. Menu: {', '.join(menu)}")
+        display_menu(selected_name,menu)
 
     except (ValueError, IndexError):
-        return "Invalid selection. Please select a valid number from the list."
+        print("Invalid selection. Please select a valid number from the list.")
 
 
-def display_menu():
-    pass
+def display_menu(store, menu):
+    print(menu)
+    root2 = ThemedTk(theme ="equilux")
+    root2.title(store)
+    root2.geometry("325x325")
+    for i in menu:
+        print(i)
+        create_menu_button(root2, i)
+
+    root2.mainloop()
+
+
+def create_menu_button(root2,i):
+    ttk.Button(root2, text = i,command = lambda: add_to_cart(i)).pack()
+
+    
 
 
 
@@ -327,9 +357,9 @@ print(test_user2)
 
 
 # Test the restaurant selection and menu viewing function
-user_location = "K7K"  # Assuming the user is in Toronto
-restaurant_menu = select_restaurant_and_view_menu(user_location)
-print(restaurant_menu)
+#user_location = "K7K"  # Assuming the user is in Toronto
+#restaurant_menu = select_restaurant_and_view_menu(user_location)
+#print(restaurant_menu)
 
 
 
