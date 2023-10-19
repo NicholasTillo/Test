@@ -1,1 +1,1 @@
-clickedvalue
+if row[5]
