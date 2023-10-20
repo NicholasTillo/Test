@@ -30,10 +30,10 @@ usr_cart = cart()
 root = ThemedTk(theme ="equilux")
 
 # File paths
-users_csv_path = "Code/users.csv"
-restaurants_csv_path = "Code/restaurants.csv"
-menu_csv_path = "Code/menu.csv"
-fulfilled_orders_path = "Code/Fulfilled _Orders.csv"
+users_csv_path = "users.csv"
+restaurants_csv_path = "restaurants.csv"
+menu_csv_path = "menu.csv"
+fulfilled_orders_path = "Fulfilled _Orders.csv"
 
 #Current Login
 current_login = None
